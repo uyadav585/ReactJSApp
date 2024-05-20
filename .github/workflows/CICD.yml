@@ -35,8 +35,18 @@ jobs:
               run:  sudo chmod 666 /var/run/docker.sock
             - name: remove running container
               run:  docker rm -f reactjs-app-container
-            - name: clean up waste docker images
-              run : docker rmi $(docker images -q | grep -v $(docker ps --format '{{.Image}}' | xargs -n 1 docker images --format '{{.ID}}' --filter=reference | tr '\n' '|'))
+            - name: List image IDs of running containers
+              run : docker ps --format '{{.Image}}' | sort | uniq > running_images.txt            
+            - name: List all image IDs
+              run: docker images --format '{{.Repository}}:{{.Tag}}' | sort | uniq > all_images.txt
+            - name: Find unused images
+              run: comm -23 all_images.txt running_images.txt > unused_images.txt
+            - name: Delete unused images
+              run: while read image; do
+                   docker rmi $image
+                   done < unused_images.txt
+            - name: Clean up temporary files
+              run: rm running_images.txt all_images.txt unused_images.txt
             - name: pull image from dockerhub
               run:  docker pull uyadav585/reactjs-app:${{ github.sha }}
             - name: run docker container
