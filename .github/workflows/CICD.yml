@@ -12,7 +12,7 @@ jobs:
             - name: checkout source
               uses: actions/checkout@v3
             - name: Build the docker image
-              run: docker build . --file Dockerfile --tag uyadav585/reactjs-app:${{ github.sha }}
+              run: docker build -t uyadav585/reactjs-app:${{ github.sha }} 
 
             - name: Publish to Registry
               uses: elgohr/Publish-Docker-Github-Action@v4
@@ -21,3 +21,6 @@ jobs:
                 username: ${{ secrets.DOCKERHUB_USERNAME }}
                 password: ${{ secrets.DOCKERHUB_TOKEN }}
                 tags: "latest,${{ github.sha }}"
+
+
+
