@@ -36,7 +36,7 @@ jobs:
             - name: remove running container
               run:  docker rm -f reactjs-app-container
             - name: clean up waste docker images
-              run : docker rmi -f $(docker images -q)
+              run : docker rmi $(docker images -q | grep -v $(docker ps --format '{{.Image}}' | xargs -n 1 docker images --format '{{.ID}}' --filter=reference | tr '\n' '|'))
             - name: pull image from dockerhub
               run:  docker pull uyadav585/reactjs-app:${{ github.sha }}
             - name: run docker container
