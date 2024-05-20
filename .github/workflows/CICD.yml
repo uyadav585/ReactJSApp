@@ -33,22 +33,30 @@ jobs:
         steps:
             - name: Ensure Docker socket permissions
               run:  sudo chmod 666 /var/run/docker.sock
+
             - name: remove running container
-              run:  docker rm -f reactjs-app-container
+              run:  docker rm -f reactjs-app-container || true
+
             - name: List image IDs of running containers
               run : docker ps --format '{{.Image}}' | sort | uniq > running_images.txt            
+
             - name: List all image IDs
               run: docker images --format '{{.Repository}}:{{.Tag}}' | sort | uniq > all_images.txt
+
             - name: Find unused images
               run: comm -23 all_images.txt running_images.txt > unused_images.txt
+
             - name: Delete unused images
-              run: while read image; do
-                   docker rmi $image
-                   done < unused_images.txt
+              run: | 
+                while read -r image; do
+                    docker rmi $image
+                done < unused_images.txt
+
             - name: Clean up temporary files
               run: rm running_images.txt all_images.txt unused_images.txt
+
             - name: pull image from dockerhub
               run:  docker pull uyadav585/reactjs-app:${{ github.sha }}
+
             - name: run docker container
-              run:  docker run -d -p 3000:80 --name reactjs-app-container uyadav585/reactjs-app:${{ github.sha }}
-            
+              run:  docker run -d -p 3000:80 --name reactjs-app-container uyadav585/reactjs-app:${{ github.sha }}   
