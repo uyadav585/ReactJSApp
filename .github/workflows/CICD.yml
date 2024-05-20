@@ -1,0 +1,23 @@
+name: deploy react app
+
+on:
+    push:
+        branches: [main]
+
+jobs:
+    build-and-publish:
+        name: Build and Publish Docker Image
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout source
+              uses: actions/checkout@v3
+            - name: Build the docker image
+              run: docker build . --file Dockerfile --tag uyadav585/reactjs-app:${{ github.sha }}
+
+            - name: Publish to Registry
+              uses: elgohr/Publish-Docker-Github-Action@v4
+              with:
+                name: uyadav585/reactjs-app
+                username: ${{ secrets.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+                tags: "latest,${{ github.sha }}"
