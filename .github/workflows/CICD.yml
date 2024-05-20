@@ -4,6 +4,9 @@ on:
     push:
         branches: [main]
 
+# remember the basics and you will understand every code in your mind
+
+
 jobs:
     build-and-publish:
         name: Build and Publish Docker Image
@@ -22,5 +25,20 @@ jobs:
                 password: ${{ secrets.DOCKERHUB_TOKEN }}
                 tags: "latest,${{ github.sha }}"
 
-# lets see
 
+
+    deploy:
+        needs: build-and-publish
+        runs-on: self-hosted
+        steps:
+            - name: Ensure Docker socket permissions
+              run:  sudo chmod 666 /var/run/docker.sock
+            - name: remove running container
+              run:  docker rm -f reactjs-app-container
+            - name: clean up waste docker images
+              run : docker rmi -f $(docker images -q)
+            - name: pull image from dockerhub
+              run:  docker pull uyadav585/reactjs-app:${{ github.sha }}
+            - name: run docker container
+              run:  docker run -d -p 3000:80 --name reactjs-app-container uyadav585/reactjs-app:${{ github.sha }}
+            
