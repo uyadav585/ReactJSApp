@@ -2,7 +2,7 @@ import DetailsCardComponent from "./components/DetailsCardComponent";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-require('dotenv').config()
+// require('dotenv').config()
 
 function App() {
   const [formData, setFormData] = useState({ name: "", email: "" });
