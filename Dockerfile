@@ -11,6 +11,7 @@ ENV REACT_APP_SERVER_BASE_URL=$REACT_APP_SERVER_BASE_URL
 
 # Set working directory and copy necessary files
 WORKDIR /app
+RUN npm install react-dotenv
 COPY package.json package-lock.json ./
 RUN npm install --production
 COPY . .
