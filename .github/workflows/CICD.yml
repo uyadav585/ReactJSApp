@@ -48,7 +48,7 @@ jobs:
 
             - name: Delete unused images
               run: | 
-                while read -r image; do
+                while read image; do
                     docker rmi $image
                 done < unused_images.txt
 
