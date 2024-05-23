@@ -11,9 +11,11 @@ ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
 
 # Set working directory and copy necessary files
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package.json ./
 RUN npm install dotenv
-RUN npm install --production
+RUN npm install path-browserify
+
+RUN npm install
 COPY . .
 
 # Build the application
