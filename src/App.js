@@ -1,6 +1,9 @@
 import DetailsCardComponent from "./components/DetailsCardComponent";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 
 console.log("process.env:", process.env);

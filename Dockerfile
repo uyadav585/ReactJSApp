@@ -11,8 +11,8 @@ ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
 
 # Set working directory and copy necessary files
 WORKDIR /app
-RUN npm install react-dotenv
 COPY package.json package-lock.json ./
+RUN npm install dotenv
 RUN npm install --production
 COPY . .
 
