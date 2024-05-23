@@ -2,7 +2,6 @@ import DetailsCardComponent from "./components/DetailsCardComponent";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-require('dotenv').config()
 
 function App() {
   const [formData, setFormData] = useState({ name: "", email: "" });
@@ -10,8 +9,8 @@ function App() {
 
   console.log("process.env:", process.env);
   console.log("process.env.REACT_APP_NODE_ENV:", process.env.REACT_APP_NODE_ENV);
-  console.log("process.env.REACT_APP_SERVER_BASE_URL:", process.env.REACT_APP_SERVER_BASE_URL);
-  const base_url = process.env.REACT_APP_NODE_ENV === 'development' ? process.env.REACT_APP_LOCAL_BASE_URL : process.env.REACT_APP_SERVER_BASE_URL;
+  console.log("process.env.REACT_APP_BACKEND_URL:", process.env.REACT_APP_BACKEND_URL);
+  const base_url = process.env.REACT_APP_NODE_ENV === 'development' ? process.env.REACT_APP_LOCAL_BASE_URL : process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
    axios.get(`${base_url}/getUsers`).then(res => { setRecordData(res.data) }).catch(err => alert(`Some error occured ==>${err}`));
