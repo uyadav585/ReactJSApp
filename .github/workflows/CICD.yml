@@ -15,8 +15,8 @@ jobs:
             - name: checkout source
               uses: actions/checkout@v3
             - name: Build the docker image
-              run: docker build . --file Dockerfile --tag uyadav585/reactjs-app:${{ github.sha }}
-#              run: docker build -t uyadav585/reactjs-app --build-arg REACT_APP_NODE_ENV='production' --build-arg REACT_APP_BACKEND_URL=${{ secrets.REACT_APP_BACKEND_URL }} .
+              # run: docker build . --file Dockerfile --tag uyadav585/reactjs-app:${{ github.sha }}
+              run: docker build -t uyadav585/reactjs-app:${{ github.sha }} --build-arg REACT_APP_NODE_ENV='production' --build-arg REACT_APP_BACKEND_URL=${{ secrets.REACT_APP_BACKEND_URL }} .
 
             - name: Publish to Registry
               uses: elgohr/Publish-Docker-Github-Action@v4
@@ -60,6 +60,7 @@ jobs:
               run:  docker pull uyadav585/reactjs-app:${{ github.sha }}
 
             - name: run docker container
-              run:  docker run -d -p 3000:80 --name reactjs-app-container -e REACT_APP_NODE_ENV='production' -e REACT_APP_BACKEND_URL=${{ secrets.REACT_APP_BACKEND_URL }} uyadav585/reactjs-app:${{ github.sha }}   
+              #run:  docker run -d -p 3000:80 --name reactjs-app-container -e REACT_APP_NODE_ENV='production' -e REACT_APP_BACKEND_URL=${{ secrets.REACT_APP_BACKEND_URL }} uyadav585/reactjs-app:${{ github.sha }}   
+              run: docker run -d -p 3000:80 --name reactjs-app-container uyadav585/reactjs-app:${{ github.sha }}
 
 # lets see error may come in .env file let see
