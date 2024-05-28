@@ -1,66 +1,30 @@
-name: deploy react app
+name: Deploy Node Application
 
-on:
-    push:
-        branches: [main]
-
-# remember the basics and you will understand every code in your mind
-
+on: 
+  push:
+    branches:
+      - mern-ec2-docker
 
 jobs:
-    build-and-publish:
-        name: Build and Publish Docker Image
-        runs-on: ubuntu-latest
-        steps:
-            - name: checkout source
-              uses: actions/checkout@v3
-            - name: Build the docker image
-              # run: docker build . --file Dockerfile --tag uyadav585/reactjs-app:${{ github.sha }}
-              run: docker build -t uyadav585/reactjs-app:${{ github.sha }} --build-arg REACT_APP_NODE_ENV=production --build-arg REACT_APP_BACKEND_URL=${{ secrets.REACT_APP_BACKEND_URL }} .
-
-            - name: Publish to Registry
-              uses: elgohr/Publish-Docker-Github-Action@v4
-              with:
-                name: uyadav585/reactjs-app
-                username: ${{ secrets.DOCKERHUB_USERNAME }}
-                password: ${{ secrets.DOCKERHUB_TOKEN }}
-                tags: "latest,${{ github.sha }}"
-
-
-
-    deploy:
-        needs: build-and-publish
-        runs-on: self-hosted
-        steps:
-            - name: Ensure Docker socket permissions
-              run:  sudo chmod 666 /var/run/docker.sock
-
-            - name: remove running container
-              run:  docker rm -f reactjs-app-container || true
-
-            - name: List image IDs of running containers
-              run : docker ps --format '{{.Image}}' | sort | uniq > running_images.txt            
-
-            - name: List all image IDs
-              run: docker images --format '{{.Repository}}:{{.Tag}}' | sort | uniq > all_images.txt
-
-            - name: Find unused images
-              run: comm -23 all_images.txt running_images.txt > unused_images.txt
-
-            - name: Delete unused images
-              run: | 
-                while read image; do
-                    docker rmi $image
-                done < unused_images.txt
-
-            - name: Clean up temporary files
-              run: rm running_images.txt all_images.txt unused_images.txt
-
-            - name: pull image from dockerhub
-              run:  docker pull uyadav585/reactjs-app:${{ github.sha }}
-
-            - name: run docker container
-              #run:  docker run -d -p 3000:80 --name reactjs-app-container -e REACT_APP_NODE_ENV='production' -e REACT_APP_BACKEND_URL=${{ secrets.REACT_APP_BACKEND_URL }} uyadav585/reactjs-app:${{ github.sha }}   
-              run: docker run -d -p 3000:80 --name reactjs-app-container uyadav585/reactjs-app:${{ github.sha }}
-
-# lets see error may come in .env file let see ...........
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+      - name: Login to docker hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}     
+      - name: Build Docker Image
+        run: docker build -t uyadav585/reactjs-app --build-arg REACT_APP_NODE_ENV='production' --build-arg REACT_APP_SERVER_BASE_URL='${{ secrets.REACT_APP_SERVER_BASE_URL }}'  .
+      - name: Publish Image to docker hub
+        run: docker push uyadav585/reactjs-app:latest 
+ 
+  deploy:
+    needs: build
+    runs-on: self-hosted 
+    steps:
+      - name: Pull image from docker hub
+        run: docker pull uyadav585/reactjs-app:latest 
+      - name: Delete old container
+        run: docker rm -f reactjs-app-container
+      - name: Run Docker Container
+        run: docker run -d -p 3000:80 --name reactjs-app-container uyadav585/reactjs-app
