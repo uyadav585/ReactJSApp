@@ -3,23 +3,38 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function App() {
+  // State to hold form data
   const [formData, setFormData] = useState({ name: "", email: "" });
+
+  // State to hold user records fetched from the server
   const [recordData, setRecordData] = useState([]);
 
+
+  // Logging environment variables for debugging
   console.log("process.env:", process.env);
   console.log("process.env.REACT_APP_NODE_ENV:", process.env.REACT_APP_NODE_ENV);
   console.log("process.env.REACT_APP_SERVER_BASE_URL:", process.env.REACT_APP_SERVER_BASE_URL);
+
+
+  // Determine base URL based on environment
   const base_url = process.env.REACT_APP_NODE_ENV === 'development' ? process.env.REACT_APP_LOCAL_BASE_URL : process.env.REACT_APP_SERVER_BASE_URL;
 
+
+  // Fetch user records from the server when the component mounts
   useEffect(() => {
    axios.get(`${base_url}/getUsers`).then(res => { setRecordData(res.data) }).catch(err => alert(`Some error occured ==>${err}`));
   }, []);
 
+
+  // Handle form input changes
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
   };
 
+
+
+  // Handle form submission  
   const handleSubmit = async (event) => {
     event.preventDefault();
     axios.post(`${base_url}/addUser`, formData).then(res => { setFormData({ name: "", email: "" }); alert("User created successfully") }).catch(err => alert(`Some error occured ==>${err}`));
@@ -28,9 +43,9 @@ function App() {
   return (
     <div className="App">
       <nav className="navbar navbar-light bg-light mb-2">
-        <a class="navbar-brand" href="https://www.youtube.com/@IntegrationNinjas">
+        <a class="navbar-brand" href="https://www.linkedin.com/in/kumar-umang-5953591b1/">
           <img src="./logo_p.png" width="50" height="50" class="d-inline-block" alt="" />
-          Integration Ninja
+          Welcome
         </a>
       </nav>
       <div className='container'>
